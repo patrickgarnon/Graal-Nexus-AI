@@ -33,3 +33,16 @@ Créer un moteur autonome capable de générer, publier et monétiser du contenu
 
 ## 👤 Auteur
 **Patrick Garnon** – Projet Graal Ultima Thulé
+
+## 🛠 Support Assistant Web App
+Un prototype Flask permettant de déclencher un scénario Make avec un jeton API fourni par l'utilisateur.
+
+### ▶️ Lancer l'application
+```bash
+cd support_assistant
+pip install -r requirements.txt
+python app.py
+```
+
+Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
+L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
