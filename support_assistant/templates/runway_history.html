@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique Runway</title>
+</head>
+<body>
+    <h1>Historique des vidéos Runway</h1>
+    {% if videos %}
+        <ul>
+        {% for video in videos %}
+            <li>
+                <p>Job: {{ video.job_id }} – {{ video.created_at }}</p>
+                <video controls width="320">
+                    <source src="{{ video.video_url }}" type="video/mp4">
+                    Votre navigateur ne supporte pas la vidéo.
+                </video>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune vidéo disponible.</p>
+    {% endif %}
+</body>
+</html>
