@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Make</title>
+</head>
+<body>
+    <h1>Dashboard Make</h1>
+    <form method="get" action="/make">
+        <label for="api_token">API Token Make:</label>
+        <input type="text" id="api_token" name="api_token" value="{{ api_token or '' }}" required>
+        <label for="scenario_id">ID Scénario:</label>
+        <input type="text" id="scenario_id" name="scenario_id" value="{{ scenario_id or '' }}" required>
+        <button type="submit">Charger</button>
+    </form>
+
+    {% if status %}
+    <p>Statut déclenchement: {{ status }}</p>
+    {% endif %}
+
+    {% if stats %}
+    <h2>Statistiques</h2>
+    <p>Nombre d'exécutions: {{ stats.execution_count }}</p>
+    <p>Taux de réussite: {{ stats.success_rate }}%</p>
+    <h3>Derniers messages</h3>
+    <ul>
+    {% for msg in stats.messages %}
+        <li>{{ msg }}</li>
+    {% endfor %}
+    </ul>
+    <form method="post" action="/make/trigger/{{ scenario_id }}">
+        <input type="hidden" name="api_token" value="{{ api_token }}">
+        <button type="submit">Déclencher</button>
+    </form>
+    {% endif %}
+</body>
+</html>
