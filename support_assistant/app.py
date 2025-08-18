@@ -23,6 +23,16 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/shopify", methods=["GET"])
+def shopify():
+    return render_template("shopify.html")
+
+
+@app.route("/make", methods=["GET"])
+def make_view():
+    return render_template("make.html")
+
+
 @app.route("/install", methods=["POST"])
 def install():
     api_token = request.form.get("api_token")
