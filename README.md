@@ -26,6 +26,44 @@ Système IA autonome multi-niches :
 
 ---
 
+## 🛠 Installation
+
+### Via Docker
+
+1. Construire l'image :
+```bash
+docker build -t graal-nexus-ai .
+```
+
+2. Lancer le conteneur :
+```bash
+docker run -p 5000:5000 \
+  -e OWNER_EMAIL=owner@example.com \
+  -e MAKE_API_TOKEN=votre_token_make \
+  -e MAKE_SCENARIO_ID=12345 \
+  graal-nexus-ai
+```
+
+### Variables d'environnement
+
+- `OWNER_EMAIL` : Adresse propriétaire recevant les alertes.
+- `MAKE_API_TOKEN` : Jeton API Make utilisé pour l'authentification.
+- `MAKE_SCENARIO_ID` : Identifiant du scénario Make à déclencher.
+
+---
+
+## 🧩 Architecture
+
+```mermaid
+graph TD
+    A[Utilisateur] -->|HTTP| B[Support Assistant]
+    B -->|API Make| C[Scénario Make]
+    C --> D[Agents]
+    D --> E[Plateformes externes]
+```
+
+---
+
 ## ⚡ Objectif
 Créer un moteur autonome capable de générer, publier et monétiser du contenu en boucle pour atteindre **1M$ de revenus passifs en < 12 mois**.
 
@@ -45,4 +83,4 @@ python app.py
 ```
 
 Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
-L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
+Ces valeurs ainsi que `OWNER_EMAIL` peuvent aussi être définies via variables d'environnement.

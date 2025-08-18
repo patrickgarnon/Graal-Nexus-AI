@@ -1,0 +1,16 @@
+# Exemple de configuration complète pour Graal Nexus AI
+
+env:
+  OWNER_EMAIL: "owner@example.com"
+  MAKE_API_TOKEN: "votre_token_make"
+  MAKE_SCENARIO_ID: "12345"
+
+agents:
+  autopilot: "1-Agents-AI/Graal_Autopilot_Agent.json"
+  sales: "1-Agents-AI/Graal_Sales_Agent.json"
+  oracle: "1-Agents-AI/Graal_Oracle_Mystique.json"
+
+scenarios:
+  autopilot_engine: "2-Scenarios-Make/Graal_Autopilot_Engine.make.json"
+  infinite_reach: "2-Scenarios-Make/Graal_Infinite_Reach.make.json"
+  alert_system: "2-Scenarios-Make/Graal_Alert_System.make.json"

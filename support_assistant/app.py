@@ -1,9 +1,10 @@
 from flask import Flask, request, render_template
+import os
 import requests
 
 app = Flask(__name__)
 
-OWNER_EMAIL = "patrickgarnon09@gmail.com"
+OWNER_EMAIL = os.getenv("OWNER_EMAIL", "patrickgarnon09@gmail.com")
 MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
 
 
@@ -25,8 +26,8 @@ def index():
 
 @app.route("/install", methods=["POST"])
 def install():
-    api_token = request.form.get("api_token")
-    scenario_id = request.form.get("scenario_id")
+    api_token = request.form.get("api_token") or os.getenv("MAKE_API_TOKEN")
+    scenario_id = request.form.get("scenario_id") or os.getenv("MAKE_SCENARIO_ID")
     if not api_token or not scenario_id:
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
