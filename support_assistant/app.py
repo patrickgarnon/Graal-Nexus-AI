@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 import requests
+from integrations.elevenlabs import get_voice_audio
 
 app = Flask(__name__)
 
@@ -31,6 +32,16 @@ def install():
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
+
+
+@app.route("/elevenlabs/voice/<voice_id>", methods=["GET"])
+def elevenlabs_voice(voice_id: str):
+    api_key = request.args.get("api_key")
+    text = request.args.get("text", "Bonjour")
+    if not api_key:
+        return "Missing API key", 400
+    audio = get_voice_audio(api_key, voice_id, text)
+    return Response(audio, mimetype="audio/mpeg")
 
 
 if __name__ == "__main__":

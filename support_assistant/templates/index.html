@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
+<body class="bg-gray-900 text-white p-4">
+    <h1 class="text-2xl mb-4">Assistant Support AI</h1>
+    <form action="/install" method="post" class="space-y-2">
+        <label for="api_token" class="block">API Token Make:</label>
+        <input type="text" id="api_token" name="api_token" required class="text-black p-1"><br>
+        <label for="scenario_id" class="block">ID Scénario:</label>
+        <input type="text" id="scenario_id" name="scenario_id" required class="text-black p-1"><br>
+        <button type="submit" class="bg-blue-600 px-4 py-2">Installer</button>
     </form>
+    <audio id="voice-player" controls class="mt-6 w-full"></audio>
 </body>
 </html>
