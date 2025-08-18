@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import requests
 
 app = Flask(__name__)
@@ -18,19 +18,40 @@ def connect_to_make(api_token: str, scenario_id: str) -> dict:
     return {"status": "connected", "scenario": scenario_id}
 
 
+def generate_runway_video(prompt: str) -> dict:
+    """Simulate a Runway video generation call.
+    This placeholder simply returns the prompt back with a dummy status.
+    """
+    # Example request (commented out as this environment has no external access)
+    # response = requests.post("https://api.runwayml.com/v1/generate", json={"prompt": prompt})
+    # return response.json()
+    return {"status": "generated", "prompt": prompt}
+
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
 
-@app.route("/install", methods=["POST"])
-def install():
-    api_token = request.form.get("api_token")
-    scenario_id = request.form.get("scenario_id")
+@app.route("/make/run", methods=["POST"])
+def make_run():
+    data = request.get_json(silent=True) or {}
+    api_token = data.get("api_token") or request.form.get("api_token")
+    scenario_id = data.get("scenario_id") or request.form.get("scenario_id")
     if not api_token or not scenario_id:
-        return "Missing credentials", 400
+        return jsonify({"error": "Missing credentials"}), 400
     result = connect_to_make(api_token, scenario_id)
-    return f"Scenario {result['scenario']} triggered with status {result['status']}."
+    return jsonify(result)
+
+
+@app.route("/runway/generate", methods=["POST"])
+def runway_generate():
+    data = request.get_json(silent=True) or {}
+    prompt = data.get("prompt") or request.form.get("prompt")
+    if not prompt:
+        return jsonify({"error": "Missing prompt"}), 400
+    result = generate_runway_video(prompt)
+    return jsonify(result)
 
 
 if __name__ == "__main__":
