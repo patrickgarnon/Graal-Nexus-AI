@@ -1,0 +1,5 @@
+{
+  "agents": [
+    {"name": "echo", "description": "Simple echo agent"}
+  ]
+}
