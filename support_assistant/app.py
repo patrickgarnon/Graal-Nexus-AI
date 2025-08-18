@@ -1,5 +1,11 @@
 from flask import Flask, request, render_template
+import logging
 import requests
+
+from src.utils.retry import retry
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -7,15 +13,13 @@ OWNER_EMAIL = "patrickgarnon09@gmail.com"
 MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
 
 
+@retry(max_attempts=3, base_delay=1, jitter=0.5, exceptions=(requests.RequestException,), logger=logger)
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
-    """Simulate triggering a Make scenario using the provided API token.
-    The real implementation should handle errors and actual API calls.
-    """
+    """Trigger a Make scenario using the provided API token."""
     headers = {"Authorization": f"Token {api_token}", "Content-Type": "application/json"}
-    # Example request (commented out as this environment has no external access)
-    # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
-    # return response.json()
-    return {"status": "connected", "scenario": scenario_id}
+    response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
+    response.raise_for_status()
+    return response.json()
 
 
 @app.route("/", methods=["GET"])
