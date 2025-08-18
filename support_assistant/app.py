@@ -1,5 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import requests
+
+from dashboard.services.make import fetch_campaign_stats, trigger_scenario
 
 app = Flask(__name__)
 
@@ -8,14 +10,8 @@ MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
 
 
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
-    """Simulate triggering a Make scenario using the provided API token.
-    The real implementation should handle errors and actual API calls.
-    """
-    headers = {"Authorization": f"Token {api_token}", "Content-Type": "application/json"}
-    # Example request (commented out as this environment has no external access)
-    # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
-    # return response.json()
-    return {"status": "connected", "scenario": scenario_id}
+    """Trigger a Make scenario using the provided API token."""
+    return trigger_scenario(api_token, scenario_id)
 
 
 @app.route("/", methods=["GET"])
@@ -31,6 +27,40 @@ def install():
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
+
+
+@app.route("/make", methods=["GET"])
+def make_dashboard():
+    api_token = request.args.get("api_token")
+    scenario_id = request.args.get("scenario_id")
+    status = request.args.get("status")
+    stats = None
+    if api_token and scenario_id:
+        stats = fetch_campaign_stats(api_token, scenario_id)
+    return render_template(
+        "make.html",
+        stats=stats,
+        api_token=api_token,
+        scenario_id=scenario_id,
+        status=status,
+    )
+
+
+@app.route("/make/trigger/<scenario_id>", methods=["POST"])
+def trigger_make(scenario_id):
+    api_token = request.form.get("api_token")
+    if not api_token:
+        return "Missing API token", 400
+    result = trigger_scenario(api_token, scenario_id)
+    status = "success" if result.get("status") == "success" else "error"
+    return redirect(
+        url_for(
+            "make_dashboard",
+            api_token=api_token,
+            scenario_id=scenario_id,
+            status=status,
+        )
+    )
 
 
 if __name__ == "__main__":
