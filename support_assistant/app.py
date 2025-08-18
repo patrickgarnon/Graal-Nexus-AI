@@ -1,5 +1,7 @@
 from flask import Flask, request, render_template
-import requests
+
+# Reuse cached HTTP utilities
+from src.utils.api_client import post
 
 app = Flask(__name__)
 
@@ -12,9 +14,9 @@ def connect_to_make(api_token: str, scenario_id: str) -> dict:
     The real implementation should handle errors and actual API calls.
     """
     headers = {"Authorization": f"Token {api_token}", "Content-Type": "application/json"}
-    # Example request (commented out as this environment has no external access)
-    # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
-    # return response.json()
+    # Example request using cached HTTP client (commented out – no external access)
+    # response = post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
+    # return response
     return {"status": "connected", "scenario": scenario_id}
 
 
