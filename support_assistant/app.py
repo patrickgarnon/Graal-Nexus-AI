@@ -1,5 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import requests
+
+from dashboard.services.runway import list_generated_videos, trigger_generation
 
 app = Flask(__name__)
 
@@ -21,6 +23,23 @@ def connect_to_make(api_token: str, scenario_id: str) -> dict:
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
+
+@app.route("/runway", methods=["GET", "POST"])
+def runway():
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        prompt = data.get("prompt", "")
+        settings = data.get("settings", {})
+        trigger_generation(prompt, settings)
+        return jsonify({"status": "queued"}), 201
+    videos = list_generated_videos()
+    return render_template("runway.html", videos=videos)
+
+
+@app.route("/runway/history", methods=["GET"])
+def runway_history():
+    return jsonify(list_generated_videos())
 
 
 @app.route("/install", methods=["POST"])
