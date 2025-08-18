@@ -11,7 +11,9 @@ Système IA autonome multi-niches :
 ---
 
 ## 📂 Contenu
-- **Graal-Nexus-AI.zip** → Contient les fichiers de configuration, prompts, et scénarios Make.
+- **/config** → Fichiers de configuration des agents et scénarios Make.
+- **/prompts** → Prompts optimisés Lyra 2.0.
+- **/src** → Code applicatif (agents, scénarios, utilitaires).
 - **/docs** → Guides d'installation et intégration.
 - **/scripts** → Automatisations GitHub → Make.
 
