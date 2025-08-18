@@ -3,15 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
+    <style>
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
 </head>
 <body>
     <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
-    </form>
+
+    <section id="make">
+        <h2>Make</h2>
+        <input type="text" id="scenario_id" placeholder="ID Scénario">
+        <button id="run-make">Lancer</button>
+    </section>
+
+    <section id="runway">
+        <h2>Runway</h2>
+        <input type="text" id="prompt" placeholder="Prompt">
+        <input type="text" id="model" placeholder="Modèle">
+        <button id="generate-runway">Générer</button>
+    </section>
+
+    <div id="toast"></div>
+
+    <script>
+    function showToast(message, isError=false) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.style.backgroundColor = isError ? "#e74c3c" : "#333";
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    document.getElementById("run-make").addEventListener("click", function() {
+        const scenarioId = document.getElementById("scenario_id").value;
+        fetch("/make/run-scenario", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({scenario_id: scenarioId})
+        })
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+        .then(data => showToast(`Scénario ${data.scenario} lancé`))
+        .catch(() => showToast("Erreur lors du lancement du scénario", true));
+    });
+
+    document.getElementById("generate-runway").addEventListener("click", function() {
+        const prompt = document.getElementById("prompt").value;
+        const model = document.getElementById("model").value;
+        fetch("/runway/generate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({prompt: prompt, model: model})
+        })
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+        .then(data => showToast(`Génération modèle ${data.model} réussie`))
+        .catch(() => showToast("Erreur de génération Runway", true));
+    });
+    </script>
 </body>
 </html>
+

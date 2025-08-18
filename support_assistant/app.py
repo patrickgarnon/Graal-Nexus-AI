@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import requests
 
 app = Flask(__name__)
@@ -18,6 +18,16 @@ def connect_to_make(api_token: str, scenario_id: str) -> dict:
     return {"status": "connected", "scenario": scenario_id}
 
 
+def make_service(scenario_id: str) -> dict:
+    """Stub for running a Make scenario.
+    Replace this with real implementation when available.
+    """
+    # Example service call (commented out)
+    # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run")
+    # return response.json()
+    return {"status": "started", "scenario": scenario_id}
+
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -31,6 +41,33 @@ def install():
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
+
+
+@app.route("/make/run-scenario", methods=["POST"])
+def run_scenario():
+    data = request.get_json()
+    scenario_id = data.get("scenario_id") if data else None
+    if not scenario_id:
+        return jsonify({"error": "Missing scenario_id"}), 400
+    result = make_service(scenario_id)
+    return jsonify(result)
+
+
+def runway_generate_service(prompt: str, model: str) -> dict:
+    """Stub for generating content with Runway model."""
+    # Example API call would go here
+    return {"status": "generated", "model": model, "prompt": prompt}
+
+
+@app.route("/runway/generate", methods=["POST"])
+def runway_generate():
+    data = request.get_json()
+    prompt = data.get("prompt") if data else None
+    model = data.get("model") if data else None
+    if not prompt or not model:
+        return jsonify({"error": "Missing prompt or model"}), 400
+    result = runway_generate_service(prompt, model)
+    return jsonify(result)
 
 
 if __name__ == "__main__":
