@@ -1,0 +1,10 @@
+{
+  "scenarios": [
+    {
+      "name": "demo",
+      "steps": [
+        {"agent": "echo", "message": "Hello from scenario"}
+      ]
+    }
+  ]
+}
