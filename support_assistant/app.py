@@ -1,21 +1,24 @@
+from pathlib import Path
+
 from flask import Flask, request, render_template
 import requests
+
+from src.core.retry import retry_on_exception, load_json
 
 app = Flask(__name__)
 
 OWNER_EMAIL = "patrickgarnon09@gmail.com"
-MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
+CONFIG = load_json(Path(__file__).with_name("config.json"))
+MAKE_API_BASE = CONFIG.get("MAKE_API_BASE", "https://api.make.com/v2")
 
 
+@retry_on_exception(max_attempts=5, base=2)
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
-    """Simulate triggering a Make scenario using the provided API token.
-    The real implementation should handle errors and actual API calls.
-    """
+    """Trigger a Make scenario using the provided API token."""
     headers = {"Authorization": f"Token {api_token}", "Content-Type": "application/json"}
-    # Example request (commented out as this environment has no external access)
-    # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
-    # return response.json()
-    return {"status": "connected", "scenario": scenario_id}
+    response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
+    response.raise_for_status()
+    return response.json()
 
 
 @app.route("/", methods=["GET"])
@@ -29,7 +32,10 @@ def install():
     scenario_id = request.form.get("scenario_id")
     if not api_token or not scenario_id:
         return "Missing credentials", 400
-    result = connect_to_make(api_token, scenario_id)
+    try:
+        result = connect_to_make(api_token, scenario_id)
+    except requests.RequestException as exc:
+        return f"Error triggering scenario: {exc}", 502
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
 
 
