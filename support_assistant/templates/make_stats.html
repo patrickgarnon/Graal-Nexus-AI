@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistiques Make</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Statistiques du scénario</h1>
+        <div class="mb-4">
+            <input id="api_token" type="text" placeholder="API Token" class="border p-2 mr-2">
+            <input id="scenario_id" type="text" placeholder="ID Scénario" class="border p-2 mr-2">
+            <button id="load" class="bg-blue-500 text-white px-4 py-2">Charger</button>
+        </div>
+        <div id="cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-4 shadow rounded" id="card-operations">
+                <h2 class="text-lg font-semibold">Opérations totales</h2>
+                <p class="text-3xl" id="total_operations">0</p>
+            </div>
+            <div class="bg-white p-4 shadow rounded" id="card-success">
+                <h2 class="text-lg font-semibold">Taux de réussite</h2>
+                <p class="text-3xl" id="success_rate">0%</p>
+            </div>
+            <div class="bg-white p-4 shadow rounded" id="card-time">
+                <h2 class="text-lg font-semibold">Temps moyen</h2>
+                <p class="text-3xl" id="avg_exec_time">0 ms</p>
+            </div>
+        </div>
+        <canvas id="statsChart" class="bg-white p-4 shadow rounded"></canvas>
+    </div>
+    <script>
+        document.getElementById('load').addEventListener('click', async () => {
+            const token = document.getElementById('api_token').value;
+            const scenario = document.getElementById('scenario_id').value;
+            const response = await fetch(`/make/stats?api_token=${token}&scenario_id=${scenario}`);
+            const data = await response.json();
+            document.getElementById('total_operations').textContent = data.total_operations;
+            document.getElementById('success_rate').textContent = data.success_rate + '%';
+            document.getElementById('avg_exec_time').textContent = data.avg_exec_time + ' ms';
+            const ctx = document.getElementById('statsChart');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Opérations', 'Taux de réussite', 'Temps moyen'],
+                    datasets: [{
+                        label: 'Statistiques',
+                        data: [data.total_operations, data.success_rate, data.avg_exec_time],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b']
+                    }]
+                },
+                options: {scales: {y: {beginAtZero: true}}}
+            });
+        });
+    </script>
+</body>
+</html>
