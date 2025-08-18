@@ -1,5 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 import requests
+
+from dashboard.elevenlabs import ensure_sample_audio, get_audio_path
 
 app = Flask(__name__)
 
@@ -20,7 +22,8 @@ def connect_to_make(api_token: str, scenario_id: str) -> dict:
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    audio_id = ensure_sample_audio()
+    return render_template("index.html", audio_id=audio_id)
 
 
 @app.route("/install", methods=["POST"])
@@ -31,6 +34,15 @@ def install():
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
+
+
+@app.route("/elevenlabs/audio/<audio_id>", methods=["GET"])
+def elevenlabs_audio(audio_id: str):
+    path = get_audio_path(audio_id)
+    if path is None:
+        return "Audio not found", 404
+    mimetype = "audio/mpeg" if path.suffix == ".mp3" else "audio/wav"
+    return send_file(path, mimetype=mimetype)
 
 
 if __name__ == "__main__":
