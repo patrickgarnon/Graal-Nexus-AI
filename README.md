@@ -46,3 +46,35 @@ python app.py
 
 Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
 L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
+
+### ⚙️ Configuration
+Copier le fichier d'exemple et renseigner vos valeurs sensibles :
+
+```bash
+cp .env.example .env
+# Éditer .env pour définir MAKE_API_KEY, LOG_LEVEL, etc.
+```
+
+### 🐳 Docker
+Construire l'image et exécuter le conteneur :
+
+```bash
+docker build -t graal-support-assistant .
+docker run --env-file .env -p 5000:5000 graal-support-assistant
+```
+
+Avec Docker Compose :
+
+```bash
+docker-compose up --build
+```
+
+### ☁️ Déploiement Cloud
+- **AWS ECS** :
+  1. `docker build -t <account>.dkr.ecr.<region>.amazonaws.com/graal-support-assistant:latest .`
+  2. Pousser l'image sur ECR puis créer un service ECS Fargate exposant le port 5000.
+  3. Configurer l'Auto Scaling (nombre minimal/maximal de tâches) selon la charge.
+- **GCP Cloud Run** :
+  1. `gcloud builds submit --tag gcr.io/<project>/graal-support-assistant`
+  2. `gcloud run deploy graal-support-assistant --image gcr.io/<project>/graal-support-assistant --platform managed --allow-unauthenticated`
+  3. Ajuster le nombre maximal d'instances via `--max-instances` pour le scaling automatique.

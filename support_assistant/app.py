@@ -1,17 +1,28 @@
+import os
+import logging
 from flask import Flask, request, render_template
+from dotenv import load_dotenv
 import requests
+
+load_dotenv()
 
 app = Flask(__name__)
 
-OWNER_EMAIL = "patrickgarnon09@gmail.com"
-MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
+OWNER_EMAIL = os.getenv("OWNER_EMAIL", "patrickgarnon09@gmail.com")
+MAKE_API_BASE = os.getenv("MAKE_API_BASE", "https://api.make.com/v2")
+MAKE_API_KEY = os.getenv("MAKE_API_KEY")
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
 
 
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
     """Simulate triggering a Make scenario using the provided API token.
+    Falls back to the MAKE_API_KEY environment variable if no token is supplied.
     The real implementation should handle errors and actual API calls.
     """
-    headers = {"Authorization": f"Token {api_token}", "Content-Type": "application/json"}
+    token = api_token or MAKE_API_KEY
+    headers = {"Authorization": f"Token {token}", "Content-Type": "application/json"}
     # Example request (commented out as this environment has no external access)
     # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
     # return response.json()
@@ -25,13 +36,13 @@ def index():
 
 @app.route("/install", methods=["POST"])
 def install():
-    api_token = request.form.get("api_token")
+    api_token = request.form.get("api_token") or MAKE_API_KEY
     scenario_id = request.form.get("scenario_id")
     if not api_token or not scenario_id:
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
-    return f"Scenario {result['scenario']} triggered with status {result['status']}."
+    return f"Scenario {result['scenario']} triggered with status {result['status']}"
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
