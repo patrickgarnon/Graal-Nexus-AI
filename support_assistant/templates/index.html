@@ -1,17 +1,18 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Assistant Support AI</title>
-</head>
-<body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
+{% extends "base.html" %}
+{% block title %}Assistant Support AI{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto p-4 md:max-w-lg">
+    <h1 class="text-2xl font-bold mb-4">Assistant Support AI</h1>
+    <form action="/install" method="post" class="flex flex-col gap-4">
+        <div class="flex flex-col">
+            <label for="api_token" class="mb-1">API Token Make:</label>
+            <input type="text" id="api_token" name="api_token" class="p-2 rounded bg-gray-800 text-gray-100" required>
+        </div>
+        <div class="flex flex-col">
+            <label for="scenario_id" class="mb-1">ID Scénario:</label>
+            <input type="text" id="scenario_id" name="scenario_id" class="p-2 rounded bg-gray-800 text-gray-100" required>
+        </div>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">Installer</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Make Scenario{% endblock %}
+{% block content %}
+<div class="p-4 flex flex-col gap-4 md:flex-row">
+    <div class="flex-1 bg-gray-800 p-4 rounded shadow">
+        <h2 class="text-xl font-bold mb-2">Scenario Info</h2>
+        <p>Manage your Make scenarios.</p>
+        <button class="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Run</button>
+    </div>
+    <div class="flex-1 bg-gray-800 p-4 rounded shadow">
+        <h2 class="text-xl font-bold mb-2">Logs</h2>
+        <table class="min-w-full text-left">
+            <thead>
+                <tr>
+                    <th class="px-2 py-1">Time</th>
+                    <th class="px-2 py-1">Event</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-t border-gray-700">
+                    <td class="px-2 py-1">10:00</td>
+                    <td class="px-2 py-1">Start</td>
+                </tr>
+                <tr class="border-t border-gray-700">
+                    <td class="px-2 py-1">10:05</td>
+                    <td class="px-2 py-1">Finished</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
