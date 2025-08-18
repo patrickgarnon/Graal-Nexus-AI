@@ -46,3 +46,11 @@ python app.py
 
 Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
 L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
+
+### 🎞️ Intégration Runway
+L'application inclut un module `integrations/runway.py` pour récupérer les vidéos générées par Runway et les stocker dans une base SQLite locale (`videos.db`).
+
+- `GET /runway/history` renvoie l'historique des vidéos en JSON.
+- `GET /runway/history/ui` affiche une page listant les vidéos avec un lecteur intégré.
+
+Définir la variable d'environnement `RUNWAY_API_KEY` pour synchroniser automatiquement les jobs Runway lors de l'accès à l'historique.
