@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Runway - Générations</title>
+    <script>
+    async function fetchVideos() {
+        const res = await fetch('/runway/history');
+        const videos = await res.json();
+        const list = document.getElementById('videos');
+        list.innerHTML = '';
+        videos.forEach(v => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = v.url;
+            a.textContent = v.title || v.url;
+            a.target = '_blank';
+            const span = document.createElement('span');
+            span.textContent = ' (' + (v.created_at || '') + ')';
+            li.appendChild(a);
+            li.appendChild(span);
+            list.appendChild(li);
+        });
+    }
+
+    async function triggerGeneration(ev) {
+        ev.preventDefault();
+        const prompt = document.getElementById('prompt').value;
+        const settingsText = document.getElementById('settings').value;
+        let settings = {};
+        try { settings = settingsText ? JSON.parse(settingsText) : {}; } catch(e) {}
+        await fetch('/runway', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({prompt, settings})
+        });
+        document.getElementById('prompt').value='';
+        document.getElementById('settings').value='';
+        await fetchVideos();
+    }
+
+    window.onload = fetchVideos;
+    </script>
+</head>
+<body>
+    <h1>Historique des vidéos générées</h1>
+    <ul id="videos">
+        {% for v in videos %}
+        <li><a href="{{ v.url }}" target="_blank">{{ v.title or v.url }}</a> ({{ v.created_at }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Générer une nouvelle vidéo</h2>
+    <form onsubmit="triggerGeneration(event)">
+        <label for="prompt">Prompt:</label>
+        <input type="text" id="prompt" required>
+        <br>
+        <label for="settings">Paramètres (JSON):</label>
+        <textarea id="settings" rows="4" cols="40"></textarea>
+        <br>
+        <button type="submit">Générer</button>
+    </form>
+</body>
+</html>
