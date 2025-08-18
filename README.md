@@ -46,3 +46,9 @@ python app.py
 
 Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
 L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
+
+### 📥 Déploiement Docker
+```bash
+cp .env.example .env  # Modifier les variables si nécessaire
+docker-compose up --build
+```
