@@ -1,12 +1,21 @@
 from flask import Flask, request, render_template
 import requests
+import os
+import sys
+
+# Ensure project root is on the Python path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+from src.utils.cache import cached, clear_cache
 
 app = Flask(__name__)
 
 OWNER_EMAIL = "patrickgarnon09@gmail.com"
 MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
+CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL_SECONDS", "3600"))
 
 
+@cached(ttl=CACHE_TTL_SECONDS)
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
     """Simulate triggering a Make scenario using the provided API token.
     The real implementation should handle errors and actual API calls.
@@ -31,6 +40,14 @@ def install():
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
+
+
+@app.route("/cache/clear", methods=["POST"])
+def clear_cache_route():
+    """Endpoint to manually clear cached API responses."""
+    connect_to_make.invalidate()
+    clear_cache()
+    return "Cache cleared", 200
 
 
 if __name__ == "__main__":
