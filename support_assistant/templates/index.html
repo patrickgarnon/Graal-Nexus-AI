@@ -2,16 +2,79 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Assistant Support AI</title>
+    <title>Runway Videos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
-    </form>
+<body class="p-4">
+    <h1 class="text-2xl mb-4">Runway Videos</h1>
+    <button id="openForm" class="bg-blue-500 text-white px-4 py-2 rounded">Générer</button>
+
+    <div id="formContainer" class="hidden mt-4">
+        <form id="generateForm" class="space-y-2">
+            <input class="border p-2 w-full" type="text" name="prompt" placeholder="Prompt" required>
+            <input class="border p-2 w-full" type="text" name="params" placeholder='Paramètres JSON ({"key":"value"})'>
+            <button class="bg-green-500 text-white px-4 py-2 rounded" type="submit">Lancer</button>
+        </form>
+    </div>
+
+    <table class="table-auto w-full mt-4 border">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border px-2">ID</th>
+                <th class="border px-2">Titre</th>
+                <th class="border px-2">URL</th>
+                <th class="border px-2">Date</th>
+                <th class="border px-2">Statut</th>
+            </tr>
+        </thead>
+        <tbody id="videosBody"></tbody>
+    </table>
+
+    <script>
+        async function loadVideos() {
+            const res = await fetch('/runway/videos');
+            const data = await res.json();
+            const body = document.getElementById('videosBody');
+            body.innerHTML = '';
+            data.videos.forEach(v => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="border px-2">${v.id}</td>
+                    <td class="border px-2">${v.title}</td>
+                    <td class="border px-2"><a class="text-blue-500" href="${v.url}">${v.url}</a></td>
+                    <td class="border px-2">${v.date}</td>
+                    <td class="border px-2">${v.status}</td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        document.getElementById('openForm').addEventListener('click', () => {
+            document.getElementById('formContainer').classList.toggle('hidden');
+        });
+
+        document.getElementById('generateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const prompt = form.prompt.value;
+            let params = {};
+            try {
+                params = form.params.value ? JSON.parse(form.params.value) : {};
+            } catch (err) {
+                alert('Paramètres JSON invalides');
+                return;
+            }
+            await fetch('/runway/generate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prompt, params})
+            });
+            form.reset();
+            document.getElementById('formContainer').classList.add('hidden');
+            loadVideos();
+        });
+
+        loadVideos();
+    </script>
 </body>
 </html>
