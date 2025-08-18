@@ -13,5 +13,42 @@
         <input type="text" id="scenario_id" name="scenario_id" required><br>
         <button type="submit">Installer</button>
     </form>
+
+    <div>
+        <button id="trigger-make">Lancer scénario Make</button>
+        <button id="generate-runway">Générer vidéo Runway</button>
+    </div>
+
+    <div id="notification" style="margin-top: 1em;"></div>
+
+    <script>
+        function showNotification(message, success) {
+            const note = document.getElementById('notification');
+            note.textContent = message;
+            note.style.color = success ? 'green' : 'red';
+        }
+
+        document.getElementById('trigger-make').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/make/trigger', { method: 'POST' });
+                if (!response.ok) throw new Error('Erreur lors du lancement du scénario Make');
+                const data = await response.json();
+                showNotification(data.message || 'Succès', true);
+            } catch (err) {
+                showNotification(err.message, false);
+            }
+        });
+
+        document.getElementById('generate-runway').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/runway/generate', { method: 'POST' });
+                if (!response.ok) throw new Error('Erreur lors de la génération de la vidéo Runway');
+                const data = await response.json();
+                showNotification(data.message || 'Succès', true);
+            } catch (err) {
+                showNotification(err.message, false);
+            }
+        });
+    </script>
 </body>
 </html>

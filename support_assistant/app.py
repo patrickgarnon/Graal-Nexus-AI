@@ -33,5 +33,17 @@ def install():
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
 
 
+@app.route("/make/trigger", methods=["POST"])
+def make_trigger():
+    """Endpoint pour déclencher un scénario Make (stub)."""
+    return {"status": "success", "message": "Scénario Make lancé"}
+
+
+@app.route("/runway/generate", methods=["POST"])
+def runway_generate():
+    """Endpoint pour générer une vidéo Runway (stub)."""
+    return {"status": "success", "message": "Génération de la vidéo Runway"}
+
+
 if __name__ == "__main__":
     app.run(debug=True)
