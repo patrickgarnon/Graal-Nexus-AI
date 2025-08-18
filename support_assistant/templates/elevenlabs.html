@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Générateur Audio ElevenLabs</title>
+</head>
+<body>
+    <h1>Générateur Audio ElevenLabs</h1>
+    <form action="/elevenlabs" method="post">
+        <label for="text">Texte :</label><br>
+        <textarea id="text" name="text" rows="4" cols="50" required></textarea><br>
+        <label for="voice_id">Voix :</label>
+        <select id="voice_id" name="voice_id">
+            {% for name, id in voices.items() %}
+            <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Générer</button>
+    </form>
+    {% if audio_url %}
+    <h2>Pré-écoute</h2>
+    <audio controls src="{{ audio_url }}"></audio>
+    {% endif %}
+</body>
+</html>
