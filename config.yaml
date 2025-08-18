@@ -1,0 +1,6 @@
+cache:
+  backend: memory  # options: memory, redis
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
