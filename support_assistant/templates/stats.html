@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistiques Make</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="p-4">
+    <h1 class="text-2xl font-bold mb-4">Statistiques Make</h1>
+    <div class="mb-4">
+        <input id="token" type="text" placeholder="API Token" class="border p-2 mr-2" />
+        <button onclick="loadStats()" class="bg-blue-500 text-white px-4 py-2">Charger</button>
+    </div>
+    <canvas id="statsChart" class="w-full max-w-lg"></canvas>
+
+    <script>
+    async function loadStats() {
+        const token = document.getElementById('token').value;
+        const res = await fetch(`/make/stats?api_token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Exécutions', 'Erreurs', 'Temps moyen'],
+                datasets: [{
+                    label: 'Stats journalières',
+                    data: [data.daily_executions, data.errors, data.average_time],
+                    backgroundColor: ['#60a5fa', '#f87171', '#34d399']
+                }]
+            }
+        });
+    }
+    </script>
+</body>
+</html>
