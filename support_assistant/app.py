@@ -1,5 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import requests
+
+from dashboard.services.shopify import fetch_recent_sales
 
 app = Flask(__name__)
 
@@ -21,6 +23,13 @@ def connect_to_make(api_token: str, scenario_id: str) -> dict:
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
+
+@app.route("/shopify", methods=["GET"])
+def shopify_sales():
+    """Return recent Shopify sales as JSON."""
+    sales = fetch_recent_sales()
+    return jsonify(sales)
 
 
 @app.route("/install", methods=["POST"])

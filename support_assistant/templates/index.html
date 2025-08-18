@@ -4,14 +4,42 @@
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
 </head>
-<body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
+  <body>
+      <h1>Assistant Support AI</h1>
+      <form action="/install" method="post">
         <label for="api_token">API Token Make:</label>
         <input type="text" id="api_token" name="api_token" required><br>
         <label for="scenario_id">ID Scénario:</label>
         <input type="text" id="scenario_id" name="scenario_id" required><br>
         <button type="submit">Installer</button>
-    </form>
-</body>
-</html>
+      </form>
+
+      <h2>Ventes Shopify récentes</h2>
+      <ul id="sales-list">
+          <li>Chargement...</li>
+      </ul>
+
+      <script>
+      async function loadSales() {
+          try {
+              const response = await fetch('/shopify');
+              const data = await response.json();
+              const list = document.getElementById('sales-list');
+              if (data.length === 0) {
+                  list.innerHTML = '<li>Aucune vente récente</li>';
+                  return;
+              }
+              list.innerHTML = data.map(order => {
+                  const total = order.total_price || '0.00';
+                  const name = order.name || order.id;
+                  return `<li>${name} - ${total}</li>`;
+              }).join('');
+          } catch (err) {
+              console.error(err);
+          }
+      }
+      loadSales();
+      setInterval(loadSales, 5000);
+      </script>
+  </body>
+  </html>
