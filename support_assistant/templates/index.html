@@ -3,15 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body>
     <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
-    </form>
+    <section x-data="salesStream()" x-init="init()">
+        <h2>Ventes</h2>
+        <p>Total: <span x-text="total.toFixed(2)"></span></p>
+        <ul>
+            <template x-for="sale in sales" :key="sale.id">
+                <li x-text="sale.amount"></li>
+            </template>
+        </ul>
+    </section>
+
+    <script>
+        function salesStream() {
+            return {
+                sales: [],
+                total: 0,
+                init() {
+                    const evtSource = new EventSource('/sales/stream');
+                    evtSource.onmessage = (e) => {
+                        const payload = JSON.parse(e.data);
+                        this.sales.push(payload.sale);
+                        this.total = payload.total;
+                    };
+                }
+            }
+        }
+    </script>
 </body>
 </html>
