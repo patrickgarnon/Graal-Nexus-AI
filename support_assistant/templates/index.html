@@ -3,15 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
-    </form>
+<body class="bg-gray-100 p-8">
+    <h1 class="text-2xl font-bold mb-6">Assistant Support AI</h1>
+
+    <div class="space-y-8">
+        <form id="makeRunForm" class="bg-white p-4 rounded shadow space-y-4">
+            <h2 class="text-xl font-semibold">Exécuter un scénario Make</h2>
+            <input type="text" id="make_api_token" name="api_token" placeholder="API Token Make" class="border p-2 w-full" required>
+            <input type="text" id="make_scenario_id" name="scenario_id" placeholder="ID Scénario" class="border p-2 w-full" required>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Lancer</button>
+            <div id="makeRunResult" class="text-sm mt-2"></div>
+        </form>
+
+        <form id="runwayForm" class="bg-white p-4 rounded shadow space-y-4">
+            <h2 class="text-xl font-semibold">Génération Runway</h2>
+            <input type="text" id="runway_prompt" name="prompt" placeholder="Prompt vidéo" class="border p-2 w-full" required>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Générer</button>
+            <div id="runwayResult" class="text-sm mt-2"></div>
+        </form>
+    </div>
+
+    <script>
+    async function postJSON(url, data) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        const text = await response.text();
+        try { return {ok: response.ok, json: JSON.parse(text)}; }
+        catch { return {ok: response.ok, json: text}; }
+    }
+
+    document.getElementById('makeRunForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const api_token = document.getElementById('make_api_token').value;
+        const scenario_id = document.getElementById('make_scenario_id').value;
+        const resultEl = document.getElementById('makeRunResult');
+        try {
+            const res = await postJSON('/make/run', {api_token, scenario_id});
+            resultEl.textContent = res.ok ? JSON.stringify(res.json) : 'Erreur: ' + JSON.stringify(res.json);
+        } catch (err) {
+            resultEl.textContent = 'Erreur: ' + err;
+        }
+    });
+
+    document.getElementById('runwayForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const prompt = document.getElementById('runway_prompt').value;
+        const resultEl = document.getElementById('runwayResult');
+        try {
+            const res = await postJSON('/runway/generate', {prompt});
+            resultEl.textContent = res.ok ? JSON.stringify(res.json) : 'Erreur: ' + JSON.stringify(res.json);
+        } catch (err) {
+            resultEl.textContent = 'Erreur: ' + err;
+        }
+    });
+    </script>
 </body>
 </html>
