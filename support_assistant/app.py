@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import requests
+from integrations.make import get_scenario_stats
 
 app = Flask(__name__)
 
@@ -31,6 +32,21 @@ def install():
         return "Missing credentials", 400
     result = connect_to_make(api_token, scenario_id)
     return f"Scenario {result['scenario']} triggered with status {result['status']}."
+
+
+@app.route("/make/stats", methods=["GET"])
+def make_stats():
+    api_token = request.args.get("api_token")
+    scenario_id = request.args.get("scenario_id")
+    if not api_token or not scenario_id:
+        return jsonify({"error": "Missing credentials"}), 400
+    stats = get_scenario_stats(api_token, scenario_id)
+    return jsonify(stats)
+
+
+@app.route("/make/dashboard", methods=["GET"])
+def make_dashboard():
+    return render_template("make_stats.html")
 
 
 if __name__ == "__main__":
