@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graal-nexus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graal-nexus-ai
+  template:
+    metadata:
+      labels:
+        app: graal-nexus-ai
+    spec:
+      containers:
+        - name: graal-nexus-ai
+          image: ghcr.io/example/graal-nexus-ai:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: OWNER_EMAIL
+              value: "patrickgarnon09@gmail.com"
+            - name: MAKE_API_BASE
+              value: "https://api.make.com/v2"
+            - name: PORT
+              value: "5000"

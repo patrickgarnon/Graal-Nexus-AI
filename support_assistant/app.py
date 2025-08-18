@@ -1,10 +1,12 @@
+import os
 from flask import Flask, request, render_template
 import requests
 
 app = Flask(__name__)
 
-OWNER_EMAIL = "patrickgarnon09@gmail.com"
-MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
+# Configuration from environment variables with sensible defaults
+OWNER_EMAIL = os.getenv("OWNER_EMAIL", "patrickgarnon09@gmail.com")
+MAKE_API_BASE = os.getenv("MAKE_API_BASE", "https://api.make.com/v2")  # Placeholder base URL
 
 
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
@@ -34,4 +36,6 @@ def install():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.getenv("PORT", "5000"))
+    debug = os.getenv("DEBUG", "True").lower() in ("1", "true", "yes")
+    app.run(host="0.0.0.0", port=port, debug=debug)
