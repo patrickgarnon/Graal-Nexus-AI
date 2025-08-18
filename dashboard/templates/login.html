@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: 'class' }
+    </script>
+    <title>Login</title>
+</head>
+<body class="bg-gray-900 text-gray-100 flex items-center justify-center h-screen">
+    <form method="post" class="bg-gray-800 p-6 rounded space-y-4">
+        {% if error %}<p class="text-red-400">{{ error }}</p>{% endif %}
+        <input type="password" name="token" placeholder="Token" class="w-full p-2 rounded bg-gray-700" />
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">Login</button>
+    </form>
+</body>
+</html>

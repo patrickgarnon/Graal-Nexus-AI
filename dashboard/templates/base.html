@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: 'class' }
+    </script>
+    <title>{% block title %}Dashboard{% endblock %}</title>
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <nav class="bg-gray-800 p-4">
+        <ul class="flex space-x-4">
+            <li><a href="/shopify" class="hover:underline">Shopify Sales</a></li>
+            <li><a href="/make" class="hover:underline">Make Campaigns</a></li>
+            <li><a href="/runway" class="hover:underline">Runway Videos</a></li>
+            <li><a href="/elevenlabs" class="hover:underline">ElevenLabs Player</a></li>
+        </ul>
+    </nav>
+    <main class="p-4">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
