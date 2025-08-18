@@ -1,12 +1,15 @@
 from flask import Flask, request, render_template
 import requests
 
+from nexus.utils.retry import retry
+
 app = Flask(__name__)
 
 OWNER_EMAIL = "patrickgarnon09@gmail.com"
 MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
 
 
+@retry(exceptions=requests.RequestException)
 def connect_to_make(api_token: str, scenario_id: str) -> dict:
     """Simulate triggering a Make scenario using the provided API token.
     The real implementation should handle errors and actual API calls.
