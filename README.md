@@ -46,3 +46,9 @@ python app.py
 
 Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
 L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
+
+### 🧠 Cache et parallélisation
+
+- Les appels à l'API Make sont mis en cache via `functools.lru_cache` (32 entrées). Cela évite de répéter des requêtes identiques.
+- Le cache est propre au processus et peut être vidé manuellement via l'endpoint `POST /cache/clear` ou automatiquement lorsque la capacité est atteinte.
+- Pour publier sur plusieurs scénarios en parallèle, indiquez plusieurs IDs séparés par des virgules. Le traitement s'effectue via `ThreadPoolExecutor` pour accélérer les publications multicanales.
