@@ -1,21 +1,11 @@
-from flask import Flask, request, render_template
-import requests
+from flask import Flask, request, render_template, jsonify
+
+from dashboard.make import MakeClient, get_campaign_stats, run_scenario
 
 app = Flask(__name__)
 
 OWNER_EMAIL = "patrickgarnon09@gmail.com"
 MAKE_API_BASE = "https://api.make.com/v2"  # Placeholder base URL
-
-
-def connect_to_make(api_token: str, scenario_id: str) -> dict:
-    """Simulate triggering a Make scenario using the provided API token.
-    The real implementation should handle errors and actual API calls.
-    """
-    headers = {"Authorization": f"Token {api_token}", "Content-Type": "application/json"}
-    # Example request (commented out as this environment has no external access)
-    # response = requests.post(f"{MAKE_API_BASE}/scenarios/{scenario_id}/run", headers=headers)
-    # return response.json()
-    return {"status": "connected", "scenario": scenario_id}
 
 
 @app.route("/", methods=["GET"])
@@ -29,8 +19,23 @@ def install():
     scenario_id = request.form.get("scenario_id")
     if not api_token or not scenario_id:
         return "Missing credentials", 400
-    result = connect_to_make(api_token, scenario_id)
-    return f"Scenario {result['scenario']} triggered with status {result['status']}."
+    try:
+        result = run_scenario(api_token, scenario_id, base_url=MAKE_API_BASE)
+    except Exception as exc:
+        return f"Failed to trigger scenario: {exc}", 500
+    status = result.get("status", "unknown")
+    return f"Scenario {scenario_id} triggered with status {status}."
+
+
+@app.route("/make/stats", methods=["GET"])
+def make_stats():
+    """Expose aggregated statistics about Make campaigns."""
+    api_token = request.args.get("api_token")
+    if not api_token:
+        return "Missing api_token", 400
+    client = MakeClient(api_token, base_url=MAKE_API_BASE)
+    stats = get_campaign_stats(client)
+    return jsonify(stats)
 
 
 if __name__ == "__main__":
