@@ -1,17 +1,68 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full">
 <head>
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
-    </form>
+<body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div class="min-h-screen flex flex-col">
+        <!-- Navbar -->
+        <nav class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-4">
+            <h1 class="text-xl font-semibold">Assistant Support AI</h1>
+            <button id="theme-toggle" class="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700">Mode sombre</button>
+        </nav>
+
+        <div class="flex flex-1">
+            <!-- Sidebar -->
+            <aside class="hidden md:block w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
+                <ul>
+                    <li class="mb-2"><a href="#" class="block p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Dashboard</a></li>
+                    <li class="mb-2"><a href="#" class="block p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Settings</a></li>
+                </ul>
+            </aside>
+
+            <!-- Content -->
+            <main class="flex-1 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded shadow">
+                        <h2 class="font-bold mb-2">Shopify</h2>
+                        <p class="text-sm">Intégration Shopify</p>
+                    </div>
+                    <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded shadow">
+                        <h2 class="font-bold mb-2">Make</h2>
+                        <p class="text-sm">Scénarios Make</p>
+                    </div>
+                    <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded shadow">
+                        <h2 class="font-bold mb-2">Runway</h2>
+                        <p class="text-sm">Création vidéo IA</p>
+                    </div>
+                </div>
+
+                <form action="/install" method="post" class="mt-8 space-y-4">
+                    <div>
+                        <label for="api_token" class="block mb-1">API Token Make:</label>
+                        <input type="text" id="api_token" name="api_token" required class="w-full p-2 border rounded bg-white dark:bg-gray-700">
+                    </div>
+                    <div>
+                        <label for="scenario_id" class="block mb-1">ID Scénario:</label>
+                        <input type="text" id="scenario_id" name="scenario_id" required class="w-full p-2 border rounded bg-white dark:bg-gray-700">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Installer</button>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+    </script>
 </body>
 </html>
