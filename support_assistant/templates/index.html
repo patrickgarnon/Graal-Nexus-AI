@@ -3,15 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Assistant Support AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <h1>Assistant Support AI</h1>
-    <form action="/install" method="post">
-        <label for="api_token">API Token Make:</label>
-        <input type="text" id="api_token" name="api_token" required><br>
-        <label for="scenario_id">ID Scénario:</label>
-        <input type="text" id="scenario_id" name="scenario_id" required><br>
-        <button type="submit">Installer</button>
-    </form>
+    <div class="max-w-xl mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Assistant Support AI</h1>
+        <form action="/install" method="post" class="space-y-2">
+            <div>
+                <label for="api_token" class="block">API Token Make:</label>
+                <input class="border p-1 w-full" type="text" id="api_token" name="api_token" required>
+            </div>
+            <div>
+                <label for="scenario_id" class="block">ID Scénario:</label>
+                <input class="border p-1 w-full" type="text" id="scenario_id" name="scenario_id" required>
+            </div>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" type="submit">Installer</button>
+        </form>
+
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold mb-2">Ventes Shopify</h2>
+            <ul id="sales-list" class="space-y-1"></ul>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('/shopify-stream');
+        const list = document.getElementById('sales-list');
+        socket.on('order', function(order){
+            const item = document.createElement('li');
+            item.className = 'border p-2 rounded';
+            const name = order.customer ? `${order.customer.first_name} ${order.customer.last_name}` : 'Client';
+            item.textContent = `#${order.id} - ${name} - ${order.total_price} ${order.currency}`;
+            list.prepend(item);
+        });
+    </script>
 </body>
 </html>
