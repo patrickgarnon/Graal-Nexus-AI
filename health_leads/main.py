@@ -9,14 +9,14 @@ Lancement local :
 """
 from __future__ import annotations
 
+import html
 import logging
-import re
 import uuid
 from typing import Literal, Optional
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -28,8 +28,6 @@ logger = logging.getLogger("graal.health_leads")
 logging.basicConfig(level=logging.INFO)
 
 settings = get_settings()
-
-EMAIL_REGEX = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -53,7 +51,7 @@ app.add_middleware(
 class GraalLeadCapture(BaseModel):
     """Charge utile de capture de lead Jouvence du Graal."""
 
-    email: str = Field(..., min_length=5, max_length=254)
+    email: EmailStr = Field(..., max_length=254)
     first_name: str = Field(..., min_length=1, max_length=100)
     consent_given: bool = Field(
         ..., description="Consentement explicite LPRPDE/RGPD — obligatoire."
@@ -62,14 +60,26 @@ class GraalLeadCapture(BaseModel):
 
     @field_validator("email")
     @classmethod
-    def validate_email_format(cls, value: str) -> str:
-        if not EMAIL_REGEX.match(value):
-            raise ValueError("Format d'adresse courriel invalide.")
-        return value.lower()
+    def normalize_email(cls, value: EmailStr) -> str:
+        # EmailStr (email-validator) fait déjà une validation RFC complète —
+        # on ne fait plus que normaliser la casse ici.
+        return str(value).lower()
 
-    @field_validator("first_name", "source")
+    @field_validator("first_name")
     @classmethod
-    def strip_and_reject_blank(cls, value: Optional[str]) -> Optional[str]:
+    def strip_and_reject_blank_first_name(cls, value: str) -> str:
+        # Champ obligatoire : un nom uniquement composé d'espaces doit être
+        # rejeté (422), jamais silencieusement transformé en valeur vide —
+        # sinon le pipeline en arrière-plan (PDF/email) plante plus loin
+        # sur une valeur qui a pourtant passé la validation.
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Le prénom ne peut pas être vide.")
+        return stripped
+
+    @field_validator("source")
+    @classmethod
+    def strip_optional_source(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
             return value
         stripped = value.strip()
@@ -92,12 +102,17 @@ class HealthResponse(BaseModel):
 async def _dispatch_graal(lead_id: str, lead: GraalLeadCapture) -> None:
     try:
         pdf_bytes = pdf_generator.generate_graal_protocol_pdf(lead.first_name)
+        # Échappement HTML explicite avant interpolation dans le corps de
+        # l'email Brevo : lead.first_name est fourni par un appelant non
+        # authentifié et ne doit jamais pouvoir injecter du markup dans un
+        # message envoyé depuis l'expéditeur de confiance.
+        safe_first_name = html.escape(lead.first_name)
         await brevo_client.send_transactional_email(
             to_email=lead.email,
             to_name=lead.first_name,
             subject="Votre Protocole Sommeil & Récupération 2026",
             html_content=(
-                f"<p>Bonjour {lead.first_name},</p>"
+                f"<p>Bonjour {safe_first_name},</p>"
                 "<p>Votre document est en pièce jointe. Merci pour votre "
                 "confiance envers Jouvence du Graal.</p>"
             ),
