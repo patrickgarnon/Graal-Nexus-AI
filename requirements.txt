@@ -1,0 +1,6 @@
+# Dépendances d'exécution du dépôt racine (main.py, webhook.py,
+# scripts/make_scenario_builder). Les apps dashboard/ et support_assistant/
+# ont leurs propres requirements.txt car elles peuvent être déployées
+# séparément.
+flask
+requests
