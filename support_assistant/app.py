@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, render_template, redirect, url_for
 import requests
 
@@ -64,4 +66,8 @@ def trigger_make(scenario_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Voir dashboard/app.py pour la justification : debug=True est un
+    # risque d'exécution de code arbitraire si ce port est jamais exposé
+    # au-delà de localhost. Désactivé par défaut.
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug_mode)

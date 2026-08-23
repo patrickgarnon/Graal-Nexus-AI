@@ -48,3 +48,14 @@ python app.py
 
 Ouvrir ensuite http://localhost:5000 pour saisir le jeton API Make et l'ID du scénario.
 L'adresse du propriétaire est configurée dans `support_assistant/app.py` via `OWNER_EMAIL`.
+
+## 🧪 Développement
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests/ -v
+```
+
+CI GitHub Actions sur chaque push/PR vers `main` : `.github/workflows/ci.yml`.
+
+Ce dépôt a ~40 branches `codex/*` non fusionnées, souvent en doublon les unes des autres. Avant de créer une nouvelle branche pour une fonctionnalité déjà tentée, consulter **[`docs/BRANCH_TRIAGE.md`](docs/BRANCH_TRIAGE.md)** — inventaire vérifié de ce que contient chaque branche et recommandation de traitement. Voir aussi **[`docs/SECURITY_NOTES.md`](docs/SECURITY_NOTES.md)** pour les constats de sécurité en attente de décision.

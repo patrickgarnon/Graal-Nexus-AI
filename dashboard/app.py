@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template
 
 app = Flask(__name__)
@@ -29,4 +31,9 @@ def elevenlabs():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Le mode debug de Flask active un débogueur interactif qui permet
+    # l'exécution de code arbitraire si le port est jamais exposé au-delà
+    # de localhost. Désactivé par défaut ; à activer explicitement en
+    # développement seulement via FLASK_DEBUG=1.
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug_mode)
